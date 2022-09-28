@@ -78,7 +78,7 @@ class Brain {
         this._createParticles()
 
         this._loadThumbsUp().then(() => {
-            console.log("thumbs up loaded")
+            // console.log("thumbs up loaded")
         })
 
         // this.gltfLoader.load('/themes/custom/brain/models/brain-instance.glb', obj => {
@@ -274,7 +274,6 @@ class Brain {
     _createParticles() {
 
         this.gltfLoader.load('./pyramid.glb', pyramid => {
-            console.log(pyramid);
             this.pyramid = pyramid.scene.children[0]
             this.pyramid.scale.set(0.007,0.007,0.007)
 
@@ -376,7 +375,8 @@ class Brain {
                 vertices.push( x, y, z );
             }
 
-            this.spaceParticlesPositions = [...vertices]
+            this.spaceParticlesPositions = [...vertices];
+            this.spaceParticlesMatrix = this.particleInstance.instanceMatrix.clone();
 
             const dummy = new THREE.Object3D()
 
@@ -400,6 +400,9 @@ class Brain {
 
                 this.particleInstance.setUniformAt('uOpacity', i / 3, 1)
             }
+
+            console.log(this.particleInstance);
+
             this.scene.add(this.particleInstance)
         })
     }
@@ -420,6 +423,8 @@ class Brain {
                 this.brain.material.transparent = true;
                 this.brain.material.opacity = 0.8;
                 this.brain.material.side = THREE.BackSide;
+
+                this.brainPosition = this.brain.geometry.attributes.position.clone();
 
                 this.brainGeometry = new Float32Array(this.brain.geometry.attributes.position.array)
 
@@ -592,19 +597,20 @@ class Brain {
             
             brainBacktoNormalTimeline.add('start').to(this.brain.rotation, {
                 y: 0,
-                duration: 10,
+                duration: 1,
                 overwrite: true,
                 onUpdate: () => {
-                this.particleInstance.rotation.y = this.brain.rotation.y 
+                    console.log(this.particleInstance)
+                    this.particleInstance.rotation.y = this.brain.rotation.y 
                 }
             }, 'start').to(this.brain.position, {
                 x: 0,
                 z: 0,
-                duration: 10, 
+                duration: 1, 
                 overwrite: true,
                 onUpdate: () => {
-                this.particleInstance.position.x = this.brain.position.x
-                this.particleInstance.position.z = this.brain.position.z
+                    this.particleInstance.position.x = this.brain.position.x
+                    this.particleInstance.position.z = this.brain.position.z
                 }
             }, 'start')
         }
@@ -614,41 +620,44 @@ class Brain {
             //Explode Brain
             let brainExplode = gsap.timeline({
                 scrollTrigger: {
-                trigger: this.config.sections.secondSection,
-                start: "bottom center-=250px",
-                scrub: true,
-                toggleActions: "play pause reverse reset",
-                endTrigger: this.config.sections.thirdSection,
-                end: "+=100px",
-                onEnter: () => {
-                    brainExplode.add("start")
-        
-                    for(let i = 0; i < this.spaceParticlesPositions.length ; i += 3) {
-                        const position = new THREE.Vector3()
-                        const matrix = new THREE.Matrix4()
-                    
-                        this.particleInstance.getMatrixAt(i / 3, matrix)
-                        position.setFromMatrixPosition(matrix)
-            
-                        const tweenPoint = gsap.to(position, {
-                            x: this.spaceParticlesPositions[i],
-                            y: this.spaceParticlesPositions[i + 1],
-                            z: this.spaceParticlesPositions[i + 2],
-                            overwrite: true,
-                            duration: 5,
-                            onUpdate: () => {
-                                matrix.setPosition(position)
-                                this.particleInstance.setMatrixAt(i / 3 , matrix)
-                                this.particleInstance.instanceMatrix.needsUpdate = true
-                            }
-                    
-                        })
-                        
-                        brainExplode.add(tweenPoint, "start")
-                    }
+                    trigger: this.config.sections.thirdSection,
+                    start: "center center",
+                    scrub: 1,
+                    toggleActions: "play pause reverse reset",
+                    endTrigger: this.config.sections.fourthSection,
+                    markers: true,
                 }
+            });
+
+            brainExplode.add("start");
+
+            for(let i = 0; i < this.spaceParticlesPositions.length; i += 3) {
+                
+                const position = new THREE.Vector3(
+                    this.brainPosition.array[i],
+                    this.brainPosition.array[i + 1],
+                    this.brainPosition.array[i + 2]
+                )
+
+                brainExplode.to(position, {
+                    x: this.spaceParticlesPositions[i],
+                    y: this.spaceParticlesPositions[i + 1],
+                    z: this.spaceParticlesPositions[i + 2] + 1,
+                    overwrite: true,
+                    duration: 1,
+                    onUpdate: () => {
+                        const matrix = new THREE.Matrix4()
+            
+                        this.particleInstance.getMatrixAt(i / 3, matrix)
+                        //position.setFromMatrixPosition(matrix)
+
+                        matrix.setPosition(position);
+
+                        this.particleInstance.setMatrixAt(i / 3 , matrix);
+                        this.particleInstance.instanceMatrix.needsUpdate = true;
+                    }
+                },"start")
             }
-      })
         }
 
         //Morph the brain to Thumbsup
@@ -704,9 +713,10 @@ class Brain {
         rotateAnimation()
         brainBacktoNormal()
         explodeBrain()
-        morphBrainToThumbsUp()
+        // morphBrainToThumbsUp()
     }
 }
+
 
 const app = new Brain('#app');
 app.init();
