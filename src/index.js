@@ -13,9 +13,10 @@ import Stats from 'stats.js';
 import { gsap } from 'gsap'
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
-
 class Brain {
     constructor(container) {
+        this.gui = new GUI()
+
         this.config = {
             "meshSize" : 0.0050,
             //"particleCount": 7500,
@@ -138,13 +139,26 @@ class Brain {
     }
 
     _createScene() {
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0xf5b400);
+        this.scene = new THREE.Scene()
+        this.scene.background = new THREE.Color(0xf5b400)
     }
 
     _createCamera() {
         this.camera = new THREE.PerspectiveCamera(60, this.container.clientWidth / this.container.clientHeight, 0.1, 100)
         this.camera.position.set(0, 0, 0)
+
+        var cameraPos = this.gui.addFolder("Camera Position")
+        cameraPos.add(this.camera.position,'x',-10,10,0.01)
+        cameraPos.add(this.camera.position,'y',-10,10,0.01)
+        cameraPos.add(this.camera.position,'z',-10,10,0.01)
+        cameraPos.open()
+
+        var cameraLook = this.gui.addFolder("Camera Look")
+        cameraLook.add(this.camera.position,'x',-10,10,0.01)
+        cameraLook.add(this.camera.position,'y',-10,10,0.01)
+        cameraLook.add(this.camera.position,'z',-10,10,0.01)
+        cameraLook.open()
+        
     }
 
     _createRenderer() {
@@ -417,14 +431,17 @@ class Brain {
                 
                 this.brain.material.dispose();
                 this.brain.material = new THREE.MeshBasicMaterial({
-                    color: 0xf5b400
+                    color: 0xf5b400,
+                    // color: 0x000000
                 })
+
+                this.brain.visible = false;
                 this.brain.material.needsUpdate = true;
                 this.brain.material.transparent = true;
                 this.brain.material.opacity = 0.8;
                 this.brain.material.side = THREE.BackSide;
 
-                this.brainPosition = this.brain.geometry.attributes.position.clone();
+                this.brainPosition = this.brain.geometry.attributes.position.clone()
 
                 this.brainGeometry = new Float32Array(this.brain.geometry.attributes.position.array)
 
@@ -468,11 +485,39 @@ class Brain {
       }
 
     _gsapScrollAnimate() {
+        // //Show Particle galaxy
+        // const particleGalaxy = () => {
+        //     for (let i = 0; i <= this.spaceParticlesPositions.length; i += 3) {
+        //         const matrix = new THREE.Matrix4()
+        //         let position = new THREE.Vector3()
+    
+        //         this.particleInstance.getMatrixAt(i / 3, matrix)
+        //         position.setFromMatrixPosition(matrix)
+    
+        //         position.x *= 40
+        //         position.y *= 40
+        //         position.z *= 40
+
+        //         gsap.to(position,
+        //         {
+        //             x: this.spaceParticlesPositions[i + 0] / 0.4, 
+        //             y: this.spaceParticlesPositions[i + 1] / 0.4, 
+        //             z: this.spaceParticlesPositions[i + 2] / 0.4,
+        //             duration: 5,
+        //             ease: "slow(1.7, 0.7, false)",
+        //             onUpdate: () => {
+        //                 matrix.setPosition(position)
+    
+        //                 this.particleInstance.setMatrixAt(i / 3, matrix)
+                    
+        //                 this.particleInstance.instanceMatrix.needsUpdate = true
+        //             }
+        //         })
+        //     }
+        // }
         //Animate to brain from the particles
         const startAnimation = () => {
             this.particleInstance.count = this.brainGeometry.length / 3;
-
-            this.particleInstance.traverse
 
             for (let i = 0; i <= this.brainGeometry.length; i += 3) {
                 //Set new position to particleInstance using GSAP
@@ -509,17 +554,16 @@ class Brain {
                 })
             }
 
-            const light = new THREE.PointLight( 0xff0000, 10, 100 );
-            light.position.set( 5, 5, 5 );
-            this.scene.add( light );
-
-            console.log(this.brain)
-
-
             //Change Brain and particle position to the right
             //TODO: Try setting the position via camera
             this.brain.position.x = 1
             this.brain.position.z = -0.9
+
+
+            // this.camera.position.set(-1,0,0)
+            const axesH = new THREE.AxesHelper(5)
+            this.brain.add(axesH)
+            
 
             this.particleInstance.position.x = 1
             this.particleInstance.position.z = -0.9
@@ -532,6 +576,7 @@ class Brain {
                     trigger: this.config.sections.firstSection,
                     start: "top top",
                     scrub: 1,
+                    markers: true,
                     toggleActions: "play pause reverse reset",
                     endTrigger: this.config.sections.secondSection,
                     end: "center center"
@@ -555,6 +600,7 @@ class Brain {
                     this.particleInstance.position.z = this.brain.position.z
                 }
             }, 'start')
+
         }
 
         //Brain back to centre Animation
@@ -627,16 +673,16 @@ class Brain {
                     endTrigger: this.config.sections.fourthSection,
                     markers: true,
                 }
-            });
+            })
 
-            brainExplode.add("start");
+            brainExplode.add("start")
 
             for(let i = 0; i < this.spaceParticlesPositions.length; i += 3) {
                 
                 const position = new THREE.Vector3(
-                    this.brainPosition.array[i],
-                    this.brainPosition.array[i + 1],
-                    this.brainPosition.array[i + 2]
+                    this.brainGeometry[i],
+                    this.brainGeometry[i + 1],
+                    this.brainGeometry[i + 2]
                 )
 
                 brainExplode.to(position, {
@@ -709,6 +755,7 @@ class Brain {
             })
         }
         
+        // particleGalaxy()
         startAnimation()
         rotateAnimation()
         brainBacktoNormal()
@@ -718,6 +765,6 @@ class Brain {
 }
 
 
-const app = new Brain('#app');
-app.init();
+const app = new Brain('#app')
+app.init()
                

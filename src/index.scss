@@ -1,128 +1,127 @@
 * {
-    box-sizing: border-box;
-    scroll-behavior: smooth !important;
-  
+  box-sizing: border-box;
+  scroll-behavior: smooth !important;
+}
+
+html {
+  // background: #692a84;
+  // background: radial-gradient(circle, #692a84 0%, #3c184c 65%);
+}
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.page-bg-block--1 {
+  background-image: radial-gradient(at 16% 4%, #ffd900 0, transparent 50%), radial-gradient(at 72% 31%, #f1cba2 0, transparent 44%), radial-gradient(at 86% 11%, #ffadad 0, transparent 52%), radial-gradient(at 57% 3%, #f90 0, transparent 49%), radial-gradient(at 93% 30%, #d6b600 0, transparent 57%), radial-gradient(at 89% 79%, #fd6344 0, transparent 45%);
+}
+
+.page-bg-block--2 {
+  background-image: radial-gradient(at 10% 100%, rgba(244, 113, 213, 0.7) 0, transparent 45%), radial-gradient(at 83% 34%, #efff85 0, transparent 50%), radial-gradient(at 94% 75%, #f5c20a 0, transparent 50%), radial-gradient(at 80% 0, #fe0 0, transparent 50%), radial-gradient(at 0 0, #f38e1b 0, transparent 50%);
+}
+
+.page-bg-block--3 {
+  background-image: radial-gradient(at 67% 64%, #fa3 0, transparent 49%), radial-gradient(at 25% 54%, #ffe100 0, transparent 44%), radial-gradient(at 30% 82%, #fb0 0, transparent 43%), radial-gradient(at 95% 92%, #ffc7ea 0, transparent 40%), radial-gradient(at 31% 66%, #f0cc00 0, transparent 41%), radial-gradient(at 65% 32%, #ffeb0f 0, transparent 54%);
+}
+
+.page-bg-block {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -2;
+}
+
+#app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+
+  canvas {
+    opacity: 0;
+    outline: none;
+    transition: 1s opacity;
+
+    html.model-loaded & {
+      opacity: 1;
+    }
   }
-  
-  html {
-    // background: #692a84;
-    // background: radial-gradient(circle, #692a84 0%, #3c184c 65%);
+}
+
+main {
+  width: 100vw;
+  height: 200vw;
+  z-index: 99;
+  position: absolute;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  font-size: 5vh;
+}
+
+section {
+  min-height: 100vh;
+  padding: 20px;
+  font-size: 4vh;
+}
+
+#scrollProgress {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 99;
+  font-size: 3vh;
+}
+
+#brain, #premier-ball {
+  color: #000;
+  font-weight: bold;
+}
+
+#content {
+  height: 2000px;
+}
+
+#info {
+  bottom: 40px;
+  color: white;
+  font-size: 14px;
+  padding: 0 20px;
+  position: fixed;
+  width: 100%;
+
+  @media (min-width: 767px) {
+    font-size: 16px;
+    padding: 0 40px;
   }
-  
-  body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    height: 100vh;
+
+  p {
+    line-height: 1.4;
     margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-  }
-  
-  .page-bg-block--1 {
-    background-image: radial-gradient(at 16% 4%, #ffd900 0, transparent 50%), radial-gradient(at 72% 31%, #f1cba2 0, transparent 44%), radial-gradient(at 86% 11%, #ffadad 0, transparent 52%), radial-gradient(at 57% 3%, #f90 0, transparent 49%), radial-gradient(at 93% 30%, #d6b600 0, transparent 57%), radial-gradient(at 89% 79%, #fd6344 0, transparent 45%);
-  }
-  
-  .page-bg-block--2 {
-    background-image: radial-gradient(at 10% 100%, rgba(244, 113, 213, 0.7) 0, transparent 45%), radial-gradient(at 83% 34%, #efff85 0, transparent 50%), radial-gradient(at 94% 75%, #f5c20a 0, transparent 50%), radial-gradient(at 80% 0, #fe0 0, transparent 50%), radial-gradient(at 0 0, #f38e1b 0, transparent 50%);
-  }
-  
-  .page-bg-block--3 {
-    background-image: radial-gradient(at 67% 64%, #fa3 0, transparent 49%), radial-gradient(at 25% 54%, #ffe100 0, transparent 44%), radial-gradient(at 30% 82%, #fb0 0, transparent 43%), radial-gradient(at 95% 92%, #ffc7ea 0, transparent 40%), radial-gradient(at 31% 66%, #f0cc00 0, transparent 41%), radial-gradient(at 65% 32%, #ffeb0f 0, transparent 54%);
-  }
-  
-  .page-bg-block {
-    pointer-events: none;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: -2;
-  }
-  
-  #app {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    z-index: -1;
-  
-    canvas {
-      opacity: 0;
-      outline: none;
-      transition: 1s opacity;
-  
-      html.model-loaded & {
-        opacity: 1;
-      }
+
+    & + p {
+      margin-top: 0.5em;
     }
   }
-  
-  main {
-    width: 100vw;
-    height: 200vw;
-    z-index: 99;
-    position: absolute;
-    justify-content: center;
-    text-align: center;
-    pointer-events: none;
-    font-size: 5vh;
-  }
-  
-  section {
-    min-height: 100vh;
-    padding: 20px;
-    font-size: 4vh;
-  }
-  
-  #scrollProgress {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    z-index: 99;
-    font-size: 3vh;
-  }
-  
-  #brain, #premier-ball {
-    color: #000;
-    font-weight: bold;
-  }
-  
-  #content {
-    height: 2000px;
-  }
-  
-  #info {
-    bottom: 40px;
-    color: white;
-    font-size: 14px;
-    padding: 0 20px;
-    position: fixed;
-    width: 100%;
-  
-    @media (min-width: 767px) {
-      font-size: 16px;
-      padding: 0 40px;
-    }
-  
-    p {
-      line-height: 1.4;
-      margin: 0;
-  
-      & + p {
-        margin-top: 0.5em;
-      }
-    }
-  
-    a {
-      color: #FEAE51;
-  
-      &:hover {
-        color: white;
-      }
+
+  a {
+    color: #FEAE51;
+
+    &:hover {
+      color: white;
     }
   }
-  
-  .tp-dfwv {
-    width: 350px !important;
-  }
+}
+
+.tp-dfwv {
+  width: 350px !important;
+}
