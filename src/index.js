@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 // Remove this if you don't need to load any 3D model
@@ -406,20 +405,33 @@ class Brain {
     
     _loadBrainModel() {
         return new Promise(resolve => {
-            this.gltfLoader.load('./brain.glb', gltf => {
+            this.gltfLoader.load('./brain-uv.glb', gltf => {
                 this.brain = gltf.scene.children[0]
+
+                const light = new THREE.PointLight( 0xff0000, 1000, 100 );
+                light.position.set( 1, 1, 1 );
+                this.scene.add( light );
+
+                const texture = new THREE.TextureLoader().load( "./earth-texture.jpeg" );
+
+                console.log(texture)
 
                 this.scene.add(this.brain)
                 this.brain.scale.set(0.85,0.85,0.85)
                 
                 this.brain.material.dispose();
-                this.brain.material = new THREE.MeshBasicMaterial({
-                    color: 0xf5b400
+                this.brain.material = new THREE.MeshStandardMaterial({
+                    color: 0xf5b400,
+                    //map: texture
                 })
+
                 this.brain.material.needsUpdate = true;
-                this.brain.material.transparent = true;
-                this.brain.material.opacity = 0.8;
-                this.brain.material.side = THREE.BackSide;
+
+                this.brain.material.vertexColors = true;
+                this.brain.material.needsUpdate = true;
+                // this.brain.material.transparent = true;
+                // this.brain.material.opacity = 0.8;
+                // this.brain.material.side = THREE.BackSide;
 
                 this.brainGeometry = new Float32Array(this.brain.geometry.attributes.position.array)
 
@@ -466,8 +478,6 @@ class Brain {
         //Animate to brain from the particles
         const startAnimation = () => {
             this.particleInstance.count = this.brainGeometry.length / 3;
-
-            this.particleInstance.traverse
 
             for (let i = 0; i <= this.brainGeometry.length; i += 3) {
                 //Set new position to particleInstance using GSAP
@@ -526,7 +536,11 @@ class Brain {
                 scrollTrigger: {
                     trigger: this.config.sections.firstSection,
                     start: "top top",
-                    scrub: 1,
+                    scrub: true,
+                    markers: {
+                        startColor: "#000000",
+                        endColor: "#000000" 
+                    },
                     toggleActions: "play pause reverse reset",
                     endTrigger: this.config.sections.secondSection,
                     end: "center center"
@@ -560,6 +574,7 @@ class Brain {
                 trigger: this.config.sections.secondSection,
                 start: "center center-=50px",
                 scrub: true,
+                markers: true,
                 toggleActions: "play pause reverse reset",
                 end: "+=200px",
                 onEnterBack: () => {
@@ -617,6 +632,10 @@ class Brain {
                 trigger: this.config.sections.secondSection,
                 start: "bottom center-=250px",
                 scrub: true,
+                markers: {
+                    startColor: "#ffffff",
+                    endColor: "#ffffff"
+                },
                 toggleActions: "play pause reverse reset",
                 endTrigger: this.config.sections.thirdSection,
                 end: "+=100px",
@@ -703,8 +722,8 @@ class Brain {
         startAnimation()
         rotateAnimation()
         brainBacktoNormal()
-        explodeBrain()
-        morphBrainToThumbsUp()
+        // explodeBrain()
+        // morphBrainToThumbsUp()
     }
 }
 
