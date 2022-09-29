@@ -1,4 +1,3 @@
-
 import * as THREE from 'three';
 
 // Remove this if you don't need to load any 3D model
@@ -423,23 +422,32 @@ class Brain {
     
     _loadBrainModel() {
         return new Promise(resolve => {
-            this.gltfLoader.load('./brain.glb', gltf => {
+            this.gltfLoader.load('./brain-uv.glb', gltf => {
                 this.brain = gltf.scene.children[0]
+
+                const light = new THREE.PointLight( 0xff0000, 1000, 100 );
+                light.position.set( 1, 1, 1 );
+                this.scene.add( light );
+
+                const texture = new THREE.TextureLoader().load( "./earth-texture.jpeg" );
+
+                console.log(texture)
 
                 this.scene.add(this.brain)
                 this.brain.scale.set(0.85,0.85,0.85)
                 
                 this.brain.material.dispose();
-                this.brain.material = new THREE.MeshBasicMaterial({
+
+                this.brain.material = new THREE.MeshStandardMaterial({
                     color: 0xf5b400,
-                    // color: 0x000000
+                    //map: texture
                 })
 
-                this.brain.visible = false;
+                this.brain.material.vertexColors = true;
                 this.brain.material.needsUpdate = true;
-                this.brain.material.transparent = true;
-                this.brain.material.opacity = 0.8;
-                this.brain.material.side = THREE.BackSide;
+                // this.brain.material.transparent = true;
+                // this.brain.material.opacity = 0.8;
+                // this.brain.material.side = THREE.BackSide;
 
                 this.brainPosition = this.brain.geometry.attributes.position.clone()
 
@@ -574,9 +582,11 @@ class Brain {
             let rotateAndPositionBrainTimeline = gsap.timeline({
                 scrollTrigger: {
                     trigger: this.config.sections.firstSection,
-                    start: "top top",
-                    scrub: 1,
-                    markers: true,
+                    start: "top top",                    scrub: true,
+                    markers: {
+                        startColor: "#000000",
+                        endColor: "#000000" 
+                    },
                     toggleActions: "play pause reverse reset",
                     endTrigger: this.config.sections.secondSection,
                     end: "center center"
@@ -611,6 +621,7 @@ class Brain {
                 trigger: this.config.sections.secondSection,
                 start: "center center-=50px",
                 scrub: true,
+                markers: true,
                 toggleActions: "play pause reverse reset",
                 end: "+=200px",
                 onEnterBack: () => {
